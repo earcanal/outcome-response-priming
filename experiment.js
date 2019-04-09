@@ -1,12 +1,12 @@
 /* create timeline */
 var timeline = [];
 
-/* define welcome message trial */
-var welcome_block = {
-  type: "html-keyboard-response",
-  stimulus: "Welcome to the experiment. Press any key to begin."
-};
-timeline.push(welcome_block);
+// full screen
+timeline.push({
+  type: 'fullscreen',
+  message: '<div class="instructions"><p>Welcome to the experiment.</p><p>Press the button below to begin in full screen mode.</p></div>',
+  fullscreen_mode: true
+});
 
 /* define instructions trial */
 var instructions = {

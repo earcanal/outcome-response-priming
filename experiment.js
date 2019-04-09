@@ -30,8 +30,8 @@ timeline.push(instructions);
 /* test trials */
 
 var learn_stimuli = [
-  { stimulus: "<div class='prime-a'>a</div>", outcome: 'img/crisps.jpg', data: { test_part: 'test', correct_response: 'm' } },
-  { stimulus: "<div class='prime-b'>b</div>", outcome: 'img/mandm.jpg', data: { test_part: 'test', correct_response: 'z' } }
+  { stimulus: "<div class='prime-a'></div>", color: 'blue', outcome: 'img/crisps.jpg', data: { test_part: 'test', correct_response: 'm' } },
+  { stimulus: "<div class='prime-b'></div>", color: 'orange', outcome: 'img/mandm.jpg', data: { test_part: 'test', correct_response: 'z' } }
 ];
 
 var fixation = {
@@ -69,6 +69,10 @@ var learn = {
   stimulus: jsPsych.timelineVariable('stimulus'),
   choices: ['m', 'z'],
   data: jsPsych.timelineVariable('data'),
+  color: jsPsych.timelineVariable('color'),
+  on_load: function() {
+    $(document.body).css({'background': this.color});
+  },
   on_finish: function(data){
     data.correct = data.key_press == jsPsych.pluginAPI.convertKeyCharacterToKeyCode(data.correct_response);
   },

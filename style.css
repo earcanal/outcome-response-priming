@@ -1,0 +1,55 @@
+/*
+ * CSS for paradigm.
+ */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+.cue {
+  font-weight: bold;  
+}
+#cue-a {
+  color: blue;
+}
+#cue-b {
+  color: orange;
+}
+.example {
+ style='width: 700px;
+}
+.example-a {
+  background: blue;
+  style='float: left;
+}
+.example-b {
+  background: orange;
+  style='float: right;
+}
+.example-a, .example-b {
+  padding: 1em;
+}
+/*
+.jspsych-content-wrapper, .jspsych-content, #jspsych-content, #jspsych-html-keyboard-response-stimulus, .prime-a, .prime-b {
+  height: 100%;
+  width: 100%;
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+*/
+.prime-a {
+  background: blue;
+}
+.prime-b {
+  background: orange;
+}
+#jspsych-image-keyboard-response-stimulus {
+    /* centre image */
+    position: absolute;
+    margin: auto;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}

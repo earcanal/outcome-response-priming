@@ -15,7 +15,7 @@ var instructions = {
       ".</p><p>If the screen is <span class='cue' id='cue-a'>blue</span>, " +
       "press the letter M on the keyboard as fast as you can to win crisps.</p>" +
       "<p>If the screen is <span class='cue' id='cue-b'>orange</span>, press the letter Z " +
-      "as fast as you can to win M&Ms.</p>" +
+      "as fast as you can to win chocolate.</p>" +
       "<div class='example'>"+
       "<div class='example-a'><img src='img/crisps.jpg'></img>" +
       "<p class='small'><strong>Press the M key</strong></p></div>" +

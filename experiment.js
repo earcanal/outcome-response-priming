@@ -30,33 +30,68 @@ timeline.push(instructions);
 /* test trials */
 
 var learn_stimuli = [
-  { stimulus: "<div class='prime-a'></div>", color: 'blue', outcome: 'img/crisps.jpg', data: { test_part: 'test', correct_response: 'm' } },
-  { stimulus: "<div class='prime-b'></div>", color: 'orange', outcome: 'img/mandm.jpg', data: { test_part: 'test', correct_response: 'z' } }
+  {
+    stimulus: "<div class='prime-a'></div>",
+    color: 'blue',
+    outcome: 'img/crisps.jpg',
+    prompt: '<div>You earned 1 crisp point</div>',
+    data: { test_part: 'test', correct_response: 'm' }
+  },
+  {
+    stimulus: "<div class='prime-b'></div>",
+    color: 'orange',
+    outcome: 'img/mandm.jpg',
+    prompt: '<div>You earned 1 chocolate point</div>',
+    data: { test_part: 'test', correct_response: 'z' }
+  }
 ];
 
-var fixation = {
+var iti = {
   type: 'html-keyboard-response',
-  stimulus: '<div style="font-size:60px;">+</div>',
+  stimulus: '<div></div>',
   choices: jsPsych.NO_KEYS,
-  trial_duration: 250,
-  data: {test_part: 'fixation'}
+  trial_duration: function(){
+    return jsPsych.randomization.sampleWithoutReplacement([250, 500, 750, 1000, 1250, 1500, 1750, 2000], 1)[0];
+  }
 }
 
-var outcome = {
+var correct_outcome = {
   type: 'image-keyboard-response',
   stimulus: jsPsych.timelineVariable('outcome'),
+  prompt: jsPsych.timelineVariable('prompt'),
   choices: jsPsych.NO_KEYS,
-  trial_duration: 1000,
+  trial_duration: 3000,
   data: {test_part: 'outcome'}
 }
 
-var if_node = {
-  timeline: [outcome],
+var if_correct = {
+  timeline: [correct_outcome],
   conditional_function: function(){
-      // get the data from the previous trial,
-      // and check which key was pressed
+      // check response accuracy from previous trial
       var data = jsPsych.data.get().last(1).values()[0];
       if(data.correct){
+          return true;
+      } else {
+          return false;
+      }
+  }
+}
+
+var incorrect_outcome = {
+  type: 'image-keyboard-response',
+  stimulus: 'img/incorrect.jpg',
+  prompt: '<div>You earned no points</div>',
+  choices: jsPsych.NO_KEYS,
+  trial_duration: 3000,
+  data: {test_part: 'outcome'}
+}
+
+var if_incorrect = {
+  timeline: [incorrect_outcome],
+  conditional_function: function(){
+      // check response accuracy from previous trial
+      var data = jsPsych.data.get().last(2).values()[0];
+      if(! data.correct){
           return true;
       } else {
           return false;
@@ -68,18 +103,19 @@ var learn = {
   type: "html-keyboard-response",
   stimulus: jsPsych.timelineVariable('stimulus'),
   choices: ['m', 'z'],
-  data: jsPsych.timelineVariable('data'),
   color: jsPsych.timelineVariable('color'),
+  data: jsPsych.timelineVariable('data'),
   on_load: function() {
     $(document.body).css({'background': this.color});
   },
   on_finish: function(data){
+    $(document.body).css({'background': 'white'});
     data.correct = data.key_press == jsPsych.pluginAPI.convertKeyCharacterToKeyCode(data.correct_response);
   },
 }
 
 var learn_procedure = {
-  timeline: [learn, if_node],
+  timeline: [learn, if_correct, if_incorrect, iti],
   timeline_variables: learn_stimuli,
   repetitions: 5,
   randomize_order: true

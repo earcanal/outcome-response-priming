@@ -38,6 +38,7 @@ html, body {
 .prime-b {
   background: orange;
 }
+/* FIXME: should be a way of centering image and prompt without absolute positioning */
 #jspsych-image-keyboard-response-stimulus {
     /* centre image */
     position: absolute;
@@ -46,4 +47,7 @@ html, body {
     left: 0;
     right: 0;
     bottom: 0;
+}
+#jspsych-image-keyboard-response-stimulus + div {
+  padding-top: 250px;
 }

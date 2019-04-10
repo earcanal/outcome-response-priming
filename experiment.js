@@ -144,6 +144,7 @@ var test_response = {
   type: "html-keyboard-response",
   stimulus: '<div></div>',
   choices: ['m', 'z'],
+  trial_duration: 4000,
   color: jsPsych.timelineVariable('cue'),
   data: jsPsych.timelineVariable('data'),
   on_load: function() {

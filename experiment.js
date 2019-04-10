@@ -8,10 +8,11 @@ timeline.push({
   fullscreen_mode: true
 });
 
-/* define instructions trial */
-var instructions = {
+/* learning */
+
+var learn_instructions = {
   type: "html-keyboard-response",
-  stimulus: "<p>In this experiment, the screen will change colour " +
+  stimulus: "<p>In this part of the experiment, the screen will change colour " +
       ".</p><p>If the screen is <span class='cue' id='cue-a'>blue</span>, " +
       "press the letter M on the keyboard as fast as you can to win crisps.</p>" +
       "<p>If the screen is <span class='cue' id='cue-b'>orange</span>, press the letter Z " +
@@ -25,9 +26,7 @@ var instructions = {
       "<p>Press any key to begin.</p>",
   post_trial_gap: 2000
 };
-timeline.push(instructions);
-
-/* test trials */
+timeline.push(learn_instructions);
 
 var iti = {
   type: 'html-keyboard-response',
@@ -124,6 +123,16 @@ var learn_procedure = {
 timeline.push(learn_procedure);
 
 /* test */
+
+var test_instructions = {
+  type: "html-keyboard-response",
+  stimulus: "<p>In this part of the experiment, you will see a picture of either crisps or chocolate " +
+      "for a few seconds.</p><p>When the screen changes from white to a colour, if you saw <strong>crisps</strong>, press the <strong>M</strong> key as fast as you can, or " +
+      "if you saw <strong>chocolate</strong>, press the <strong>Z</strong> key as fast as you can.</p>" +
+      "<p>Press any key to begin.</p>",
+  post_trial_gap: 2000
+};
+timeline.push(test_instructions);
 
 var test_outcome = {
   type: 'image-keyboard-response',

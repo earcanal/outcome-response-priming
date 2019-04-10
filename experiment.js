@@ -17,9 +17,9 @@ var instructions = {
       "<p>If the screen is <span class='cue' id='cue-b'>orange</span>, press the letter Z " +
       "as fast as you can to win chocolate.</p>" +
       "<div class='example'>"+
-      "<div class='example-a'><img src='img/crisps.jpg'></img>" +
+      "<div class='example-a'><img src='img/crisp.jpg'></img>" +
       "<p class='small'><strong>Press the M key</strong></p></div>" +
-      "<div class='example-b'><img src='img/mandm.jpg'></img>" +
+      "<div class='example-b'><img src='img/chocolate.jpg'></img>" +
       "<p class='small'><strong>Press the Z key</strong></p></div>" +
       "</div>"+
       "<p>Press any key to begin.</p>",
@@ -29,23 +29,6 @@ timeline.push(instructions);
 
 /* test trials */
 
-var learn_stimuli = [
-  {
-    stimulus: "<div class='prime-a'></div>",
-    color: 'blue',
-    outcome: 'img/crisps.jpg',
-    prompt: '<div>You earned 1 crisp point</div>',
-    data: { test_part: 'test', correct_response: 'm' }
-  },
-  {
-    stimulus: "<div class='prime-b'></div>",
-    color: 'orange',
-    outcome: 'img/mandm.jpg',
-    prompt: '<div>You earned 1 chocolate point</div>',
-    data: { test_part: 'test', correct_response: 'z' }
-  }
-];
-
 var iti = {
   type: 'html-keyboard-response',
   stimulus: '<div></div>',
@@ -53,7 +36,7 @@ var iti = {
   trial_duration: function(){
     return jsPsych.randomization.sampleWithoutReplacement([250, 500, 750, 1000, 1250, 1500, 1750, 2000], 1)[0];
   }
-}
+};
 
 var correct_outcome = {
   type: 'image-keyboard-response',
@@ -62,7 +45,7 @@ var correct_outcome = {
   choices: jsPsych.NO_KEYS,
   trial_duration: 3000,
   data: {test_part: 'outcome'}
-}
+};
 
 var if_correct = {
   timeline: [correct_outcome],
@@ -75,7 +58,7 @@ var if_correct = {
           return false;
       }
   }
-}
+};
 
 var incorrect_outcome = {
   type: 'image-keyboard-response',
@@ -84,7 +67,7 @@ var incorrect_outcome = {
   choices: jsPsych.NO_KEYS,
   trial_duration: 3000,
   data: {test_part: 'outcome'}
-}
+};
 
 var if_incorrect = {
   timeline: [incorrect_outcome],
@@ -97,7 +80,25 @@ var if_incorrect = {
           return false;
       }
   }
-}
+};
+
+// FIXME: parameterize for counterbalancing
+var learn_stimuli = [
+  {
+    stimulus: "<div class='prime-a'></div>",
+    color: 'blue',
+    outcome: 'img/crisp.jpg',
+    prompt: '<div>You earned 1 crisp point</div>',
+    data: { test_part: 'test', correct_response: 'm' }
+  },
+  {
+    stimulus: "<div class='prime-b'></div>",
+    color: 'orange',
+    outcome: 'img/chocolate.jpg',
+    prompt: '<div>You earned 1 chocolate point</div>',
+    data: { test_part: 'test', correct_response: 'z' }
+  }
+];
 
 var learn = {
   type: "html-keyboard-response",
@@ -112,22 +113,83 @@ var learn = {
     $(document.body).css({'background': 'white'});
     data.correct = data.key_press == jsPsych.pluginAPI.convertKeyCharacterToKeyCode(data.correct_response);
   },
-}
+};
 
 var learn_procedure = {
   timeline: [learn, if_correct, if_incorrect, iti],
   timeline_variables: learn_stimuli,
   repetitions: 5,
   randomize_order: true
-}
+};
 timeline.push(learn_procedure);
 
-/* define debrief */
+/* test */
 
+var test_outcome = {
+  type: 'image-keyboard-response',
+  stimulus: jsPsych.timelineVariable('outcome'),
+  prompt: jsPsych.timelineVariable('prompt'),
+  choices: jsPsych.NO_KEYS,
+  trial_duration: 3000,
+  data: jsPsych.timelineVariable('data')
+};
+var test_delay = {
+  type: 'html-keyboard-response',
+  stimulus: '<div></div>',
+  choices: jsPsych.NO_KEYS,
+  trial_duration: jsPsych.timelineVariable('trial_duration'),
+  data: jsPsych.timelineVariable('data')
+};
+var test_response = {
+  type: "html-keyboard-response",
+  stimulus: '<div></div>',
+  choices: ['m', 'z'],
+  color: jsPsych.timelineVariable('cue'),
+  data: jsPsych.timelineVariable('data'),
+  on_load: function() {
+    $(document.body).css({'background': this.color});
+  },
+  on_finish: function(data){
+    $(document.body).css({'background': 'white'});
+    data.correct = data.key_press == jsPsych.pluginAPI.convertKeyCharacterToKeyCode(data.correct_response);
+  },
+};
+
+var factors = {
+    cue: ['blue', 'orange'],
+    outcome: ['crisp', 'chocolate'],
+    delay: [2, 4, 10]
+};
+var trials = jsPsych.randomization.factorial(factors, 1);
+var test_variables = [];
+trials.forEach((item, index) => {
+  var vars = {
+      outcome: 'img/' + item.outcome + '.jpg',
+      prompt: '<div>earn 1 ' + item.outcome + ' point</div>',
+      cue: item.cue,
+      trial_duration: item.delay
+  }
+  var data = {test_part: 'test-response'}
+  if (item.outcome == 'crisp') {
+    data.correct_response = 'm'
+  } else {
+    data.correct_response = 'z'
+  }
+  vars.data = data
+  test_variables.push(vars)
+});
+var test_procedure = {
+  timeline: [test_outcome, test_delay, test_response],
+  timeline_variables: test_variables,
+  randomize_order: true
+};
+timeline.push(test_procedure);
+
+/* debrief */
+// FIXME: display points earned?
 var debrief_block = {
   type: "html-keyboard-response",
   stimulus: function() {
-
     var trials = jsPsych.data.get().filter({test_part: 'test'});
     var correct_trials = trials.filter({correct: true});
     var accuracy = Math.round(correct_trials.count() / trials.count() * 100);
@@ -136,8 +198,6 @@ var debrief_block = {
     return "<p>You responded correctly on "+accuracy+"% of the trials.</p>"+
     "<p>Your average response time was "+rt+"ms.</p>"+
     "<p>Press any key to complete the experiment. Thank you!</p>";
-
   }
 };
 timeline.push(debrief_block);
-

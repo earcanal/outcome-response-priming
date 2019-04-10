@@ -137,7 +137,7 @@ var test_delay = {
   type: 'html-keyboard-response',
   stimulus: '<div></div>',
   choices: jsPsych.NO_KEYS,
-  trial_duration: jsPsych.timelineVariable('trial_duration'),
+  trial_duration: jsPsych.timelineVariable('delay'),
   data: jsPsych.timelineVariable('data')
 };
 var test_response = {
@@ -168,7 +168,7 @@ trials.forEach((item, index) => {
       outcome: 'img/' + item.outcome + '.jpg',
       prompt: '<div>earn 1 ' + item.outcome + ' point</div>',
       cue: item.cue,
-      trial_duration: item.delay
+      delay: item.delay * 1000
   }
   var data = {test_part: 'test-response'}
   if (item.outcome == 'crisp') {

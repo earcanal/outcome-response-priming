@@ -12,8 +12,8 @@ timeline.push({
 
 var learn_instructions = {
   type: "html-keyboard-response",
-  stimulus: "<p>In this part of the experiment, the screen will change colour " +
-      ".</p><p>If the screen is <span class='cue' id='cue-a'>blue</span>, " +
+  stimulus: "<p>In this part of the experiment, the screen will change colour.</p>" +
+      "<p>If the screen is <span class='cue' id='cue-a'>blue</span>, " +
       "press the letter M on the keyboard as fast as you can to win crisps.</p>" +
       "<p>If the screen is <span class='cue' id='cue-b'>orange</span>, press the letter Z " +
       "as fast as you can to win chocolate.</p>" +
@@ -117,8 +117,10 @@ var learn = {
 var learn_procedure = {
   timeline: [learn, if_correct, if_incorrect, iti],
   timeline_variables: learn_stimuli,
-  repetitions: 5,
-  randomize_order: true
+  sample: {
+    type: 'fixed-repetitions',
+    size: 5
+  }
 };
 timeline.push(learn_procedure);
 

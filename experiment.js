@@ -136,15 +136,22 @@ var test_instructions = {
 };
 timeline.push(test_instructions);
 
+var test_delay = {
+  type: 'html-keyboard-response',
+  stimulus: jsPsych.timelineVariable('delay_prompt'),
+  choices: jsPsych.NO_KEYS,
+  trial_duration: 2500,
+  data: jsPsych.timelineVariable('data')
+};
 var test_outcome = {
   type: 'image-keyboard-response',
   stimulus: jsPsych.timelineVariable('outcome'),
-  prompt: jsPsych.timelineVariable('prompt'),
+  //prompt: jsPsych.timelineVariable('prompt'),
   choices: jsPsych.NO_KEYS,
   trial_duration: 3000,
   data: jsPsych.timelineVariable('data')
 };
-var test_delay = {
+var test_distraction = {
   type: 'html-keyboard-response',
   stimulus: '<div></div>',
   choices: jsPsych.NO_KEYS,
@@ -177,6 +184,7 @@ var test_variables = [];
 trials.forEach((item, index) => {
   var vars = {
       outcome: 'img/' + item.outcome + '.jpg',
+      delay_prompt: '<div>On the following trial, you can earn 1 ' + item.outcome + ' point</div>',
       prompt: '<div>earn 1 ' + item.outcome + ' point</div>',
       cue: item.cue,
       delay: item.delay * 1000
@@ -191,7 +199,7 @@ trials.forEach((item, index) => {
   test_variables.push(vars)
 });
 var test_procedure = {
-  timeline: [test_outcome, test_delay, test_response],
+  timeline: [test_delay, test_outcome, test_distraction, test_response],
   timeline_variables: test_variables,
   randomize_order: true
 };

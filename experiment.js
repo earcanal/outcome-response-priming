@@ -122,7 +122,7 @@ var learn_procedure = {
     size: 5
   }
 };
-timeline.push(learn_procedure);
+if (! Debug) timeline.push(learn_procedure);
 
 /* test */
 

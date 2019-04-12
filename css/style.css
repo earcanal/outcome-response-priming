@@ -51,3 +51,10 @@ html, body {
 #jspsych-image-keyboard-response-stimulus + div {
   padding-top: 250px;
 }
+
+/* mouse plugin */
+canvas {
+  display: block;
+  margin: 0 auto;
+  border: 0;
+}

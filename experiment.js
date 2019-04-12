@@ -1,27 +1,29 @@
 /* create timeline */
 var timeline = [];
 
-// full screen
-timeline.push({
-  type: 'fullscreen',
-  message: '<div class="instructions"><p>Welcome to the experiment.</p><p>Press the button below to begin in full screen mode.</p></div>',
-  fullscreen_mode: true
-});
+if (! Debug) {
+  // full screen
+  timeline.push({
+    type: 'fullscreen',
+    message: '<div class="instructions"><p>Welcome to the experiment.</p><p>Press the button below to begin in full screen mode.</p></div>',
+    fullscreen_mode: true
+  });
+}
 
 /* learning */
 
 var learn_instructions = {
   type: "html-keyboard-response",
-  stimulus: "<p>In this part of the experiment, the screen will change colour.</p>" +
+  stimulus: "<p>In this part of the experiment, you will see a dot on a coloured screen.</p>" +
       "<p>If the screen is <span class='cue' id='cue-a'>blue</span>, " +
-      "press the letter M on the keyboard as fast as you can to win crisps.</p>" +
-      "<p>If the screen is <span class='cue' id='cue-b'>orange</span>, press the letter Z " +
-      "as fast as you can to win chocolate.</p>" +
+      "move the dot to the <strong>RIGHT</strong> as fast as you can to win crisps.</p>" +
+      "<p>If the screen is <span class='cue' id='cue-b'>orange</span>, move the dot " +
+      "to the <strong>LEFT</strong> as fast as you can to win chocolate.</p>" +
       "<div class='example'>"+
       "<div class='example-a'><img src='img/crisp.jpg'></img>" +
-      "<p class='small'><strong>Press the M key</strong></p></div>" +
+      "<p class='small'><strong>RIGHT</strong></p></div>" +
       "<div class='example-b'><img src='img/chocolate.jpg'></img>" +
-      "<p class='small'><strong>Press the Z key</strong></p></div>" +
+      "<p class='small'><strong>LEFT</strong></p></div>" +
       "</div>"+
       "<p>Press any key to begin.</p>",
   post_trial_gap: 2000
@@ -85,32 +87,33 @@ var if_incorrect = {
 var learn_stimuli = [
   {
     stimulus: "<div class='prime-a'></div>",
-    color: 'blue',
+    background: 'blue',
+    foreground: 'white',
     outcome: 'img/crisp.jpg',
     prompt: '<div>You earned 1 crisp point</div>',
-    data: { test_part: 'test', correct_response: 'm' }
+    data: { test_part: 'test', correct_response: 'right' }
   },
   {
     stimulus: "<div class='prime-b'></div>",
-    color: 'orange',
+    background: 'blue',
+    foreground: 'white',
     outcome: 'img/chocolate.jpg',
     prompt: '<div>You earned 1 chocolate point</div>',
-    data: { test_part: 'test', correct_response: 'z' }
+    data: { test_part: 'test', correct_response: 'left' }
   }
 ];
 
 var learn = {
-  type: "html-keyboard-response",
+  type: 'html-mouse-response',
   stimulus: jsPsych.timelineVariable('stimulus'),
-  choices: ['m', 'z'],
-  color: jsPsych.timelineVariable('color'),
+  background: jsPsych.timelineVariable('background'),
   data: jsPsych.timelineVariable('data'),
   on_load: function() {
-    $(document.body).css({'background': this.color});
+    $(document.body).css({'background': this.background});
   },
   on_finish: function(data){
     $(document.body).css({'background': 'white'});
-    data.correct = data.key_press == jsPsych.pluginAPI.convertKeyCharacterToKeyCode(data.correct_response);
+    data.correct = data.direction == data.correct_response
   },
 };
 
@@ -129,8 +132,9 @@ if (! Debug) timeline.push(learn_procedure);
 var test_instructions = {
   type: "html-keyboard-response",
   stimulus: "<p>In this part of the experiment, you will see a picture of either crisps or chocolate " +
-      "for a few seconds.</p><p>When the screen changes from white to a colour, if you saw <strong>crisps</strong>, press the <strong>M</strong> key as fast as you can, or " +
-      "if you saw <strong>chocolate</strong>, press the <strong>Z</strong> key as fast as you can.</p>" +
+      "for a few seconds.</p><p>When you see a dot on a coloured screen, if you saw <strong>crisps</strong>, " +
+      "move the dot to the <strong>RIGHT</strong> as fast as you can, or " +
+      "if you saw <strong>chocolate</strong>, move the dot to the <strong>LEFT</strong> as fast as you can.</p>" +
       "<p>Press any key to begin.</p>",
   post_trial_gap: 2000
 };
@@ -159,18 +163,18 @@ var test_distraction = {
   data: jsPsych.timelineVariable('data')
 };
 var test_response = {
-  type: "html-keyboard-response",
+  type: "html-mouse-response",
   stimulus: '<div></div>',
-  choices: ['m', 'z'],
   trial_duration: 4000,
-  color: jsPsych.timelineVariable('cue'),
+  background: jsPsych.timelineVariable('cue'),
+  foreground: 'white',
   data: jsPsych.timelineVariable('data'),
   on_load: function() {
-    $(document.body).css({'background': this.color});
+    $(document.body).css({'background': this.background});
   },
   on_finish: function(data){
     $(document.body).css({'background': 'white'});
-    data.correct = data.key_press == jsPsych.pluginAPI.convertKeyCharacterToKeyCode(data.correct_response);
+    data.correct = data.direction == data.correct_response;
   },
 };
 

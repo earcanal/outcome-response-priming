@@ -95,7 +95,7 @@ var learn_stimuli = [
   },
   {
     stimulus: "<div class='prime-b'></div>",
-    background: 'blue',
+    background: 'orange',
     foreground: 'white',
     outcome: 'img/chocolate.jpg',
     prompt: '<div>You earned 1 chocolate point</div>',

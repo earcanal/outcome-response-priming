@@ -15,7 +15,7 @@ if (! Debug) {
 var learn_instructions = {
   type: "html-keyboard-response",
   stimulus: "<p>In this part of the experiment, you will see a dot on a coloured screen.</p>" +
-      "<p>Move the dot to the left or right as fast as you can to win crisps or chocolate.</p>" +
+      "<p>Move the dot to the left or right as fast as you can to win rewards.</p>" +
       "<p>Press any key to begin.</p>",
   post_trial_gap: 2000
 };
@@ -75,22 +75,29 @@ var if_incorrect = {
 };
 
 // FIXME: parameterize for counterbalancing
+var s1 = s1 || 'blue';
+var s2 = s2 || 'orange';
+var o1 = o1 || 'crisp';
+var o2 = o2 || 'chocolate';
+var r1 = r1 || 'right';
+var r2 = r2 || 'left';
+
 var learn_stimuli = [
   {
     stimulus: "<div class='prime-a'></div>",
-    background: 'blue',
+    background: s1,
     foreground: 'white',
-    outcome: 'img/crisp.jpg',
-    prompt: '<div>You earned 1 crisp point</div>',
-    data: { test_part: 'test', correct_response: 'right' }
+    outcome: 'img/' + o1 + '.jpg',
+    prompt: '<div>You earned 1 ' + o1 + ' point</div>',
+    data: { test_part: 'test', correct_response: r1 }
   },
   {
     stimulus: "<div class='prime-b'></div>",
-    background: 'orange',
+    background: s2,
     foreground: 'white',
-    outcome: 'img/chocolate.jpg',
-    prompt: '<div>You earned 1 chocolate point</div>',
-    data: { test_part: 'test', correct_response: 'left' }
+    outcome: 'img/' + o2 + '.jpg',
+    prompt: '<div>You earned 1 ' + o2 + ' point</div>',
+    data: { test_part: 'test', correct_response: r2 }
   }
 ];
 
@@ -122,10 +129,10 @@ if (! Debug) timeline.push(learn_procedure);
 
 var test_instructions = {
   type: "html-keyboard-response",
-  stimulus: "<p>In this part of the experiment, you will see a picture of either crisps or chocolate " +
-      "for a few seconds.</p><p>When you see a dot on a coloured screen, if you saw <strong>crisps</strong>, " +
-      "move the dot to the <strong>RIGHT</strong> as fast as you can, or " +
-      "if you saw <strong>chocolate</strong>, move the dot to the <strong>LEFT</strong> as fast as you can.</p>" +
+  stimulus: "<p>In this part of the experiment, you will see a picture of either " + o1 + ' or ' + o2 +
+      " for a few seconds.</p><p>When you see a dot on a coloured screen, if you saw <strong>" + o1 + "</strong>, " +
+      "move the dot to the <strong>" + r1 + "</strong> as fast as you can, or " +
+      "if you saw <strong>" + o2 + "</strong>, move the dot to the <strong>" + r2 + "</strong> as fast as you can.</p>" +
       "<p>Press any key to begin.</p>",
   post_trial_gap: 2000
 };
@@ -170,8 +177,8 @@ var test_response = {
 };
 
 var factors = {
-    cue: ['blue', 'orange'],
-    outcome: ['crisp', 'chocolate'],
+    cue: [s1, s2],
+    outcome: [o1, o2],
     delay: [2, 4, 10]
 };
 var trials = jsPsych.randomization.factorial(factors, 1);
@@ -185,10 +192,10 @@ trials.forEach((item, index) => {
       delay: item.delay * 1000
   }
   var data = {test_part: 'test-response'}
-  if (item.outcome == 'crisp') {
-    data.correct_response = 'm'
+  if (item.outcome == o1) {
+    data.correct_response = r1
   } else {
-    data.correct_response = 'z'
+    data.correct_response = r2
   }
   vars.data = data
   test_variables.push(vars)

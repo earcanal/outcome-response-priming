@@ -114,6 +114,10 @@ jsPsych.plugins['html-mouse-response'] = (function() {
     var x = x_centre;
     var y = y_centre;
 
+    // pointer lock object forking for cross browser
+    canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock;
+    document.exitPointerLock  = document.exitPointerLock  || document.mozExitPointerLock;
+
     function canvasDraw() {
       ctx.fillStyle = trial.background;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -124,12 +128,6 @@ jsPsych.plugins['html-mouse-response'] = (function() {
     }
     canvasDraw();
     lock();
-
-    // pointer lock object forking for cross browser
-    canvas.requestPointerLock = canvas.requestPointerLock ||
-                                canvas.mozRequestPointerLock;
-    document.exitPointerLock = document.exitPointerLock ||
-                               document.mozExitPointerLock;
 
     var locked = 0;
     canvas.onclick = function() {
@@ -174,11 +172,11 @@ jsPsych.plugins['html-mouse-response'] = (function() {
       x += e.movementX;
       y += e.movementY;
       if (x >= x_centre + 100) {
-        unlock()
+        //unlock()
         after_response('right')
       }
       if (x <= x_centre - 100) {
-        unlock()
+        //unlock()
         after_response('left')
       }
 

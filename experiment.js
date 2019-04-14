@@ -15,16 +15,7 @@ if (! Debug) {
 var learn_instructions = {
   type: "html-keyboard-response",
   stimulus: "<p>In this part of the experiment, you will see a dot on a coloured screen.</p>" +
-      "<p>If the screen is <span class='cue' id='cue-a'>blue</span>, " +
-      "move the dot to the <strong>RIGHT</strong> as fast as you can to win crisps.</p>" +
-      "<p>If the screen is <span class='cue' id='cue-b'>orange</span>, move the dot " +
-      "to the <strong>LEFT</strong> as fast as you can to win chocolate.</p>" +
-      "<div class='example'>"+
-      "<div class='example-a'><img src='img/crisp.jpg'></img>" +
-      "<p class='small'><strong>RIGHT</strong></p></div>" +
-      "<div class='example-b'><img src='img/chocolate.jpg'></img>" +
-      "<p class='small'><strong>LEFT</strong></p></div>" +
-      "</div>"+
+      "<p>Move the dot to the left or right as fast as you can to win crisps or chocolate.</p>" +
       "<p>Press any key to begin.</p>",
   post_trial_gap: 2000
 };

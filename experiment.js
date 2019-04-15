@@ -187,6 +187,7 @@ var test_response = {
 var factors = {
     cue: [s1, s2],
     outcome: [o1, o2],
+    //delay: [1, 1, 1]
     delay: [2, 4, 10]
 };
 var trials = jsPsych.randomization.factorial(factors, 1);

@@ -60,10 +60,10 @@ jsPsych.plugins['html-mouse-response'] = (function() {
   }
 
   plugin.trial = function(display_element, trial) {
-    const width    = height = trial.range;
-    const x_centre = width / 2;
-    const y_centre = height / 2;
-    const RADIUS   = 10;
+    var width    = height = trial.range;
+    var x_centre = width / 2;
+    var y_centre = height / 2;
+    var RADIUS   = 10;
     var direction  = '';
 
     var new_html = '<canvas width="' + width + '" height="' + height + 
@@ -169,15 +169,16 @@ jsPsych.plugins['html-mouse-response'] = (function() {
       if (document.pointerLockElement === canvas ||
           document.mozPointerLockElement === canvas) {
         console.log('The pointer lock status is now locked');
-        document.addEventListener("mousemove", updatePosition, false);
+        canvas.addEventListener("mousemove", updatePosition, false);
       } else {
         console.log('The pointer lock status is now unlocked');  
-        document.removeEventListener("mousemove", updatePosition, false);
+        canvas.removeEventListener("mousemove", updatePosition, false);
       }
     }
 
     var animation;
     function updatePosition(e) {
+      console.log('e.movementX = ' + e.movementX + ' e.movementY = ' + e.movementY + ' ' + trial.background);
       x += e.movementX;
       y += e.movementY;
       if (x >= x_centre + x_centre) {

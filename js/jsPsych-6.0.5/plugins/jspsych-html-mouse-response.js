@@ -8,18 +8,24 @@
  **/
 
 jsPsych.plugins['html-mouse-response'] = (function() {
-  const width    = 640;
-  const x_centre = width / 2;
-  const height   = 360;
-  const y_centre = height / 2;
-  const RADIUS   = 10;
-
   var plugin = {};
 
   plugin.info = {
     name: "html-mouse-response",
     description: '',
     parameters: {
+      id: {
+        type: jsPsych.plugins.parameterType.STRING,
+        pretty_name: 'id',
+        default: 'jspsych-html-mouse-response-stimulus',
+        description: 'Stimulus id.'
+      },
+      range: {
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Range',
+        default: 100,
+        description: 'Mouse response area.'
+      },
       background: {
         type: jsPsych.plugins.parameterType.STRING,
         pretty_name: 'Background',
@@ -32,17 +38,11 @@ jsPsych.plugins['html-mouse-response'] = (function() {
         default: 'white',
         description: 'Dot color.'
       },
-      stimulus: {
-        type: jsPsych.plugins.parameterType.HTML_STRING,
-        pretty_name: 'Stimulus',
-        default: undefined,
-        description: 'The HTML string to be displayed'
-      },
       prompt: {
         type: jsPsych.plugins.parameterType.STRING,
         pretty_name: 'Prompt',
         default: null,
-        description: 'Any content here will be displayed below the stimulus.'
+        description: 'Any content here will be displayed below the response canvas.'
       },
       stimulus_duration: {
         type: jsPsych.plugins.parameterType.INT,
@@ -60,8 +60,15 @@ jsPsych.plugins['html-mouse-response'] = (function() {
   }
 
   plugin.trial = function(display_element, trial) {
+    const width    = height = trial.range;
+    const x_centre = width / 2;
+    const y_centre = height / 2;
+    const RADIUS   = 10;
+    var direction  = '';
 
-    var new_html = '<canvas width="' + width + '" height="' + height + '" id="jspsych-html-keyboard-response-stimulus">Your browser does not support HTML5 canvas</canvas>';
+    var new_html = '<canvas width="' + width + '" height="' + height + 
+      '" id="' + trial.id + '">Your browser does not support HTML5 canvas</canvas>' +
+      '<div id="tracker"></div>';
 
     // add prompt
     if(trial.prompt !== null){
@@ -80,10 +87,11 @@ jsPsych.plugins['html-mouse-response'] = (function() {
     // end trial when it is time
     var end_trial = function() {
       jsPsych.pluginAPI.clearAllTimeouts(); // kill any remaining setTimeout handlers
+
       // gather the data to store for the trial
       var trial_data = {
         "rt": response.rt,
-        "stimulus": trial.stimulus,
+        "prompt": trial.prompt,
         "direction": direction
       };
       display_element.innerHTML = '';   // clear the display
@@ -94,14 +102,13 @@ jsPsych.plugins['html-mouse-response'] = (function() {
     var after_response = function(response) {
 
       direction = response;
+      unlock();
       // after a valid response, the stimulus will have the CSS class 'responded'
       // which can be used to provide visual feedback that a response was recorded
       //display_element.querySelector('#jspsych-html-mouse-response-stimulus').className += ' responded';
 
       end_trial();
     };
-
-    var direction = '';
 
     function degToRad(degrees) {
       var result = Math.PI / 180 * degrees;
@@ -127,24 +134,21 @@ jsPsych.plugins['html-mouse-response'] = (function() {
       ctx.fill();
     }
     canvasDraw();
+
+    // User _must_ have allowed fullscreen prior to this for lock/unlock to work.
+    // See NOTE in https://w3c.github.io/pointerlock/#extensions-to-the-element-interface
+    // Sequential trials using this plugin fail to keep the pointer locked in Chrome 70.0.3538.77 (Ubuntu)
     lock();
 
-    var locked = 0;
     canvas.onclick = function() {
-      if (locked) {
-        unlock();
-      } else {
-        lock();
-      }
+      lock();
     };
 
     function lock() {
       canvas.requestPointerLock();
-      locked = 1;
     }
     function unlock() {
       document.exitPointerLock();
-      locked = 0
     }
     function center_pointer() {
       x = x_centre
@@ -156,27 +160,30 @@ jsPsych.plugins['html-mouse-response'] = (function() {
     // Hook pointer lock state change events for different browsers
     document.addEventListener('pointerlockchange', lockChangeAlert, false);
     document.addEventListener('mozpointerlockchange', lockChangeAlert, false);
+    document.addEventListener('pointerlockerror', lockError, false);
 
+    function lockError() {
+      console.log('Pointer lock error.')
+    }
     function lockChangeAlert() {
       if (document.pointerLockElement === canvas ||
           document.mozPointerLockElement === canvas) {
+        console.log('The pointer lock status is now locked');
         document.addEventListener("mousemove", updatePosition, false);
       } else {
+        console.log('The pointer lock status is now unlocked');  
         document.removeEventListener("mousemove", updatePosition, false);
       }
     }
-
 
     var animation;
     function updatePosition(e) {
       x += e.movementX;
       y += e.movementY;
-      if (x >= x_centre + 100) {
-        //unlock()
+      if (x >= x_centre + x_centre) {
         after_response('right')
       }
-      if (x <= x_centre - 100) {
-        //unlock()
+      if (x <= x_centre - x_centre) {
         after_response('left')
       }
 
@@ -192,6 +199,7 @@ jsPsych.plugins['html-mouse-response'] = (function() {
       if (y < -RADIUS) {
         y = canvas.height + RADIUS;
       }
+      //tracker.textContent = "X position: " + x + ", Y position: " + y + ' width = ' + width;
 
       if (!animation) {
         animation = requestAnimationFrame(function() {
@@ -200,18 +208,6 @@ jsPsych.plugins['html-mouse-response'] = (function() {
         });
       }
     }
-
-
-    // start the response listener
-    /*
-    var keyboardListener = jsPsych.pluginAPI.getKeyboardResponse({
-      callback_function: after_response,
-      valid_responses: trial.choices,
-      rt_method: 'date',
-      persist: false,
-      allow_held_key: false
-    });
-  */
 
     // hide stimulus if stimulus_duration is set
     if (trial.stimulus_duration !== null) {

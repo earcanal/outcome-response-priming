@@ -53,8 +53,22 @@ html, body {
 }
 
 /* mouse plugin */
+canvas#response {
+  display: block;
+  margin: 0 auto;
+  border-width: 0 2px;
+  border-style: solid;
+  border-color: white;
+}
 canvas {
   display: block;
   margin: 0 auto;
-  border: 0;
+  border: 1px solid white;
+}
+#tracker {
+  display: hidden;
+  position: absolute;
+  top: 0;
+  right: 10px;
+  background-color: white;
 }

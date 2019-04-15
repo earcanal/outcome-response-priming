@@ -1,7 +1,7 @@
 /* create timeline */
 var timeline = [];
 
-if (! Debug) {
+if (Debug < 2) {
   // full screen
   timeline.push({
     type: 'fullscreen',
@@ -15,7 +15,7 @@ if (! Debug) {
 var learn_instructions = {
   type: "html-keyboard-response",
   stimulus: "<p>In this part of the experiment, you will see a dot on a coloured screen.</p>" +
-      "<p>Move the dot to the left or right as fast as you can to win rewards.</p>" +
+      "<p>Move the dot past the line on the left or right as fast as you can to win rewards.</p>" +
       "<p>Press any key to begin.</p>",
   post_trial_gap: 2000
 };
@@ -103,6 +103,7 @@ var learn_stimuli = [
 
 var learn = {
   type: 'html-mouse-response',
+  id: 'response',
   stimulus: jsPsych.timelineVariable('stimulus'),
   background: jsPsych.timelineVariable('background'),
   data: jsPsych.timelineVariable('data'),
@@ -120,19 +121,20 @@ var learn_procedure = {
   timeline_variables: learn_stimuli,
   sample: {
     type: 'fixed-repetitions',
-    size: 5
+    size: trials || 12
   }
 };
-if (! Debug) timeline.push(learn_procedure);
+if (Debug < 1) timeline.push(learn_procedure);
 
 /* test */
 
 var test_instructions = {
   type: "html-keyboard-response",
   stimulus: "<p>In this part of the experiment, you will see a picture of either " + o1 + ' or ' + o2 +
-      " for a few seconds.</p><p>When you see a dot on a coloured screen, if you saw <strong>" + o1 + "</strong>, " +
-      "move the dot to the <strong>" + r1 + "</strong> as fast as you can, or " +
-      "if you saw <strong>" + o2 + "</strong>, move the dot to the <strong>" + r2 + "</strong> as fast as you can.</p>" +
+      " for a few seconds. When the picture first disappears, don't move the mouse as you will lose points.<p>" +
+      "When the screen changes colour, if you saw <strong>" + o1 + "</strong>, " +
+      "move the dot past the <strong>" + r1 + "</strong> line, or " +
+      "if you saw <strong>" + o2 + "</strong>, move the dot past the <strong>" + r2 + "</strong> line. Respond as quickly and accurately as you can.</p>" +
       "<p>Press any key to begin.</p>",
   post_trial_gap: 2000
 };
@@ -148,20 +150,26 @@ var test_delay = {
 var test_outcome = {
   type: 'image-keyboard-response',
   stimulus: jsPsych.timelineVariable('outcome'),
-  //prompt: jsPsych.timelineVariable('prompt'),
   choices: jsPsych.NO_KEYS,
   trial_duration: 3000,
   data: jsPsych.timelineVariable('data')
 };
 var test_distraction = {
-  type: 'html-keyboard-response',
-  stimulus: '<div></div>',
-  choices: jsPsych.NO_KEYS,
+  type: 'html-mouse-response',
+  prompt: '<div id="distraction-prompt">Keep the dot within the square.</div>',
+  range: 20,
+  background: 'black',
   trial_duration: jsPsych.timelineVariable('delay'),
-  data: jsPsych.timelineVariable('data')
+  data: jsPsych.timelineVariable('data'),
+  on_finish: function(data){
+    //FIXME: Any response incurs penalty
+    //data.correct = data.direction == data.correct_response
+  },
 };
+
 var test_response = {
   type: "html-mouse-response",
+  id: 'response',
   stimulus: '<div></div>',
   trial_duration: 4000,
   background: jsPsych.timelineVariable('cue'),

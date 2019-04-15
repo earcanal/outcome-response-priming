@@ -20,13 +20,15 @@
 <script src="js/jsPsych-6.0.5/plugins/jspsych-html-mouse-response.js"></script>
 <script src='js/util.js'></script>
 <script>
-    var Debug = $.QueryString.Debug ? $.QueryString.Debug : 0;        // 1 = debug
-    var s1    = $.QueryString.s1    ? $.QueryString.s1    : 'blue';
-    var s2    = $.QueryString.s2    ? $.QueryString.s2    : 'orange';
-    var o1    = $.QueryString.o1    ? $.QueryString.o1    : 'crisp';
-    var o2    = $.QueryString.o2    ? $.QueryString.o2    : 'chocolate';
-    var r1    = $.QueryString.r1    ? $.QueryString.r1    : 'right';
-    var r2    = $.QueryString.r2    ? $.QueryString.r2    : 'left';
+    // cf. getQueryString() in jsPsych
+    var trials = $.QueryString.trials ? $.QueryString.trials : 12;
+    var Debug  = $.QueryString.Debug  ? $.QueryString.Debug  : 0;
+    var s1     = $.QueryString.s1     ? $.QueryString.s1     : 'blue';
+    var s2     = $.QueryString.s2     ? $.QueryString.s2     : 'orange';
+    var o1     = $.QueryString.o1     ? $.QueryString.o1     : 'crisp';
+    var o2     = $.QueryString.o2     ? $.QueryString.o2     : 'chocolate';
+    var r1     = $.QueryString.r1     ? $.QueryString.r1     : 'right';
+    var r2     = $.QueryString.r2     ? $.QueryString.r2     : 'left';
 </script>
 <script src='experiment.js'></script>
 

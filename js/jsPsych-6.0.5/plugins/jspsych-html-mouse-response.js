@@ -23,7 +23,7 @@ jsPsych.plugins['html-mouse-response'] = (function() {
       range: {
         type: jsPsych.plugins.parameterType.INT,
         pretty_name: 'Range',
-        default: 100,
+        default: 300,
         description: 'Mouse response area.'
       },
       background: {
@@ -118,8 +118,6 @@ jsPsych.plugins['html-mouse-response'] = (function() {
     // setup canvas
     var canvas = document.querySelector('canvas');
     var ctx = canvas.getContext('2d');
-    var x = x_centre;
-    var y = y_centre;
 
     // pointer lock object forking for cross browser
     canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock;
@@ -133,7 +131,7 @@ jsPsych.plugins['html-mouse-response'] = (function() {
       ctx.arc(x, y, RADIUS, 0, degToRad(360), true);
       ctx.fill();
     }
-    canvasDraw();
+    center_pointer();
 
     // User _must_ have allowed fullscreen prior to this for lock/unlock to work.
     // See NOTE in https://w3c.github.io/pointerlock/#extensions-to-the-element-interface
@@ -143,7 +141,6 @@ jsPsych.plugins['html-mouse-response'] = (function() {
     canvas.onclick = function() {
       lock();
     };
-
     function lock() {
       canvas.requestPointerLock();
     }
@@ -178,14 +175,17 @@ jsPsych.plugins['html-mouse-response'] = (function() {
 
     var animation;
     function updatePosition(e) {
-      console.log('e.movementX = ' + e.movementX + ' e.movementY = ' + e.movementY + ' ' + trial.background);
+      if (Debug > 0)
+        console.log('e.movementX = ' + e.movementX + ' e.movementY = ' + e.movementY + ' ' + trial.background);
       x += e.movementX;
       y += e.movementY;
-      if (x >= x_centre + x_centre) {
-        after_response('right')
+      if (x >= x_centre + x_centre) {  // crossed right threshold
+        after_response('right');
+        return;
       }
-      if (x <= x_centre - x_centre) {
-        after_response('left')
+      if (x <= x_centre - x_centre) {  // crossed left threshold
+        after_response('left');
+        return;
       }
 
       if (x > canvas.width + RADIUS) {

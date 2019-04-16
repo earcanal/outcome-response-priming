@@ -22,11 +22,17 @@ var learn_instructions = {
 timeline.push(learn_instructions);
 
 var iti = {
-  type: 'html-keyboard-response',
-  stimulus: '<div></div>',
-  choices: jsPsych.NO_KEYS,
+  type: 'html-mouse-response',
+  prompt: '<div id="distraction-prompt">Keep the dot within the square.</div>',
+  range: 20,
+  background: 'black',
   trial_duration: function(){
     return jsPsych.randomization.sampleWithoutReplacement([250, 500, 750, 1000, 1250, 1500, 1750, 2000], 1)[0];
+  },
+  data: {test_part: 'learn-iti'},
+  on_finish: function(data){
+    //FIXME: Any response incurs penalty
+    //data.correct = data.direction == data.correct_response
   }
 };
 
@@ -74,7 +80,7 @@ var if_incorrect = {
   }
 };
 
-// FIXME: parameterize for counterbalancing
+// Set parameters (from query string) or defaults.
 var s1 = s1 || 'blue';
 var s2 = s2 || 'orange';
 var o1 = o1 || 'crisp';
@@ -117,7 +123,7 @@ var learn = {
 };
 
 var learn_procedure = {
-  timeline: [learn, if_correct, if_incorrect, iti],
+  timeline: [iti, learn, if_correct, if_incorrect],
   timeline_variables: learn_stimuli,
   sample: {
     type: 'fixed-repetitions',
@@ -187,7 +193,6 @@ var test_response = {
 var factors = {
     cue: [s1, s2],
     outcome: [o1, o2],
-    //delay: [1, 1, 1]
     delay: [2, 4, 10]
 };
 var trials = jsPsych.randomization.factorial(factors, 1);

@@ -59,6 +59,8 @@ jsPsych.plugins['html-mouse-response'] = (function() {
     }
   }
 
+  debug = 0;
+
   plugin.trial = function(display_element, trial) {
     var width    = height = trial.range;
     var x_centre = width / 2;
@@ -155,10 +157,12 @@ jsPsych.plugins['html-mouse-response'] = (function() {
     function lockChangeAlert() {
       if (document.pointerLockElement === canvas ||
           document.mozPointerLockElement === canvas) {
-        console.log('The pointer lock status is now locked');
+        if (debug)
+          console.log('The pointer lock status is now locked');
         canvas.addEventListener("mousemove", updatePosition, false);
       } else {
-        console.log('The pointer lock status is now unlocked');  
+        if (debug)
+          console.log('The pointer lock status is now unlocked');  
         canvas.removeEventListener("mousemove", updatePosition, false);
       }
     }

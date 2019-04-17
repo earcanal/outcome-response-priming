@@ -75,38 +75,28 @@ jsPsych.plugins['html-mouse-response'] = (function() {
       new_html += trial.prompt;
     }
 
-    // draw
     display_element.innerHTML = new_html;
-
-    // store response
-    var response = {
-      rt: null,
-      direction: null
-    };
 
     // end trial when it is time
     var end_trial = function() {
       jsPsych.pluginAPI.clearAllTimeouts(); // kill any remaining setTimeout handlers
 
       // gather the data to store for the trial
-      var trial_data = {
-        "rt": response.rt,
-        "prompt": trial.prompt,
-        "direction": direction
+      trial_data = {
+        'rt': null, // FIXME
+        'prompt': trial.prompt,
+        'direction': direction,
+        'range': trial.range,
+        'trial_duration': trial.duration
       };
       display_element.innerHTML = '';   // clear the display
       jsPsych.finishTrial(trial_data);  // move on to the next trial
     };
 
-    // function to handle responses by the subject
+    // handle participant response
     var after_response = function(response) {
-
       direction = response;
       unlock();
-      // after a valid response, the stimulus will have the CSS class 'responded'
-      // which can be used to provide visual feedback that a response was recorded
-      //display_element.querySelector('#jspsych-html-mouse-response-stimulus').className += ' responded';
-
       end_trial();
     };
 

@@ -17,7 +17,8 @@ var learn_instructions = {
   stimulus: "<p>In this part of the experiment, you will see a dot on a coloured screen.</p>" +
       "<p>Move the dot past the line on the left or right as fast as you can to win rewards.</p>" +
       "<p>Press any key to begin.</p>",
-  post_trial_gap: 2000
+  post_trial_gap: 2000,
+  data: { phase: 'learn' }
 };
 timeline.push(learn_instructions);
 
@@ -26,13 +27,11 @@ var iti = {
   prompt: '<div id="distraction-prompt">Keep the dot within the square.</div>',
   range: 20,
   background: 'black',
-  trial_duration: function(){
-    return jsPsych.randomization.sampleWithoutReplacement([250, 500, 750, 1000, 1250, 1500, 1750, 2000], 1)[0];
-  },
-  data: {test_part: 'learn-iti'},
+  data: { phase: 'learn' },
+  trial_duration: function() { return jsPsych.randomization.sampleWithoutReplacement([250, 500, 750, 1000, 1250, 1500, 1750, 2000], 1)[0]; },
   on_finish: function(data){
     //FIXME: Any response incurs penalty
-    //data.correct = data.direction == data.correct_response
+    data.correct = data.direction
   }
 };
 
@@ -42,7 +41,10 @@ var correct_outcome = {
   prompt: jsPsych.timelineVariable('prompt'),
   choices: jsPsych.NO_KEYS,
   trial_duration: 3000,
-  data: {test_part: 'outcome'}
+  data: {
+    phase: 'learn',
+    correct: true
+  }
 };
 
 var if_correct = {
@@ -64,7 +66,10 @@ var incorrect_outcome = {
   prompt: '<div>You earned no points</div>',
   choices: jsPsych.NO_KEYS,
   trial_duration: 3000,
-  data: {test_part: 'outcome'}
+  data: {
+    phase: 'learn',
+    correct: false
+  }
 };
 
 var if_incorrect = {
@@ -90,20 +95,30 @@ var r2 = r2 || 'left';
 
 var learn_stimuli = [
   {
-    stimulus: "<div class='prime-a'></div>",
+    stimulus: "<div class='s1'></div>",
     background: s1,
     foreground: 'white',
     outcome: 'img/' + o1 + '.jpg',
     prompt: '<div>You earned 1 ' + o1 + ' point</div>',
-    data: { test_part: 'test', correct_response: r1 }
+    data: {
+      phase: 'learn',
+      stimulus: s1,
+      outcome: o1,
+      correct_response: r1
+    }
   },
   {
-    stimulus: "<div class='prime-b'></div>",
+    stimulus: "<div class='s2'></div>",
     background: s2,
     foreground: 'white',
     outcome: 'img/' + o2 + '.jpg',
     prompt: '<div>You earned 1 ' + o2 + ' point</div>',
-    data: { test_part: 'test', correct_response: r2 }
+    data: {
+      phase: 'learn',
+      stimulus: s2,
+      outcome: o2,
+      correct_response: r2
+    }
   }
 ];
 
@@ -118,7 +133,7 @@ var learn = {
   },
   on_finish: function(data){
     $(document.body).css({'background': 'white'});
-    data.correct = data.direction == data.correct_response
+    data.correct = data.direction == data.correct_response;
   },
 };
 
@@ -169,16 +184,15 @@ var test_distraction = {
   data: jsPsych.timelineVariable('data'),
   on_finish: function(data){
     //FIXME: Any response incurs penalty
-    //data.correct = data.direction == data.correct_response
+    data.correct = data.direction
   },
 };
-
 var test_response = {
   type: "html-mouse-response",
   id: 'response',
   stimulus: '<div></div>',
   trial_duration: 4000,
-  background: jsPsych.timelineVariable('cue'),
+  background: jsPsych.timelineVariable('stimulus'),
   foreground: 'white',
   data: jsPsych.timelineVariable('data'),
   on_load: function() {
@@ -190,8 +204,9 @@ var test_response = {
   },
 };
 
+// Randomise all combinations of stimulus, outcome, and delay.
 var factors = {
-    cue: [s1, s2],
+    stimulus: [s1, s2],
     outcome: [o1, o2],
     delay: [2, 4, 10]
 };
@@ -202,10 +217,15 @@ trials.forEach((item, index) => {
       outcome: 'img/' + item.outcome + '.jpg',
       delay_prompt: '<div>On the following trial, you can earn 1 ' + item.outcome + ' point</div>',
       prompt: '<div>earn 1 ' + item.outcome + ' point</div>',
-      cue: item.cue,
+      stimulus: item.stimulus,
       delay: item.delay * 1000
   }
-  var data = {test_part: 'test-response'}
+  var data = {
+    phase: 'test',
+    outcome: item.outcome,
+    delay: item.delay,
+    stimulus: item.stimulus
+  }
   if (item.outcome == o1) {
     data.correct_response = r1
   } else {

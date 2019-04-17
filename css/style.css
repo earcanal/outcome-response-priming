@@ -6,29 +6,6 @@ html, body {
   margin: 0;
 }
 
-.cue {
-  font-weight: bold;  
-}
-#cue-a {
-  color: blue;
-}
-#cue-b {
-  color: orange;
-}
-.example {
- style='width: 700px;
-}
-.example-a {
-  background: blue;
-  style='float: left;
-}
-.example-b {
-  background: orange;
-  style='float: right;
-}
-.example-a, .example-b {
-  padding: 1em;
-}
 .jspsych-display-element {
    overflow-y: hidden;
  }

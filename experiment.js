@@ -1,6 +1,8 @@
 /* create timeline */
 var timeline = [];
 
+jsPsych.data.addProperties({subject: 1, condition: 'FIXME'}); // FIXME
+
 if (Debug < 2) {
   // full screen
   timeline.push({
@@ -11,7 +13,7 @@ if (Debug < 2) {
 }
 
 /* learning */
-
+var block_timeline = [];
 var learn_instructions = {
   type: "html-keyboard-response",
   stimulus: "<p>In this part of the experiment, you will see a dot on a coloured screen.</p>" +
@@ -20,7 +22,7 @@ var learn_instructions = {
   post_trial_gap: 2000,
   data: { phase: 'learn' }
 };
-timeline.push(learn_instructions);
+block_timeline.push(learn_instructions);
 
 var iti = {
   type: 'html-mouse-response',
@@ -145,7 +147,7 @@ var learn_procedure = {
     size: trials || 12
   }
 };
-if (Debug < 1) timeline.push(learn_procedure);
+//if (Debug < 1) block_timeline.push(learn_procedure);
 
 /* test */
 
@@ -157,9 +159,10 @@ var test_instructions = {
       "move the dot past the <strong>" + r1 + "</strong> line, or " +
       "if you saw <strong>" + o2 + "</strong>, move the dot past the <strong>" + r2 + "</strong> line. Respond as quickly and accurately as you can.</p>" +
       "<p>Press any key to begin.</p>",
-  post_trial_gap: 2000
+  post_trial_gap: 2000,
+  data: { phase: 'test' }
 };
-timeline.push(test_instructions);
+block_timeline.push(test_instructions);
 
 var test_delay = {
   type: 'html-keyboard-response',
@@ -239,7 +242,25 @@ var test_procedure = {
   timeline_variables: test_variables,
   randomize_order: true
 };
-timeline.push(test_procedure);
+//block_timeline.push(test_procedure);
+
+
+blocks = 2;
+block  = 1;
+var loop_node = {
+    timeline: block_timeline,
+    loop_function: function(data) {
+      jsPsych.data.getLastTimelineData().addToAll({block: block});
+      block++;
+      if (block <= blocks) {
+            // store block number
+            return true;
+        } else {
+            return false;
+        }
+    }
+}
+timeline.push(loop_node)
 
 /* debrief */
 // FIXME: display points earned?

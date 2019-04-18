@@ -12,7 +12,8 @@ if (Debug < 2) {
   });
 }
 
-/* learning */
+/*** learn ***/
+
 var block_timeline = [];
 var learn_instructions = {
   type: "html-keyboard-response",
@@ -26,7 +27,7 @@ block_timeline.push(learn_instructions);
 
 var iti = {
   type: 'html-mouse-response',
-  prompt: '<div id="distraction-prompt">Keep the dot within the square.</div>',
+  prompt: '<div id="iti-prompt">Keep the dot within the square.</div>',
   range: 20,
   background: 'black',
   data: { phase: 'learn' },
@@ -36,7 +37,6 @@ var iti = {
     data.correct = data.direction
   }
 };
-
 var correct_outcome = {
   type: 'image-keyboard-response',
   stimulus: jsPsych.timelineVariable('outcome'),
@@ -48,7 +48,6 @@ var correct_outcome = {
     correct: true
   }
 };
-
 var if_correct = {
   timeline: [correct_outcome],
   conditional_function: function(){
@@ -61,7 +60,6 @@ var if_correct = {
       }
   }
 };
-
 var incorrect_outcome = {
   type: 'image-keyboard-response',
   stimulus: 'img/incorrect.jpg',
@@ -73,7 +71,6 @@ var incorrect_outcome = {
     correct: false
   }
 };
-
 var if_incorrect = {
   timeline: [incorrect_outcome],
   conditional_function: function(){
@@ -88,12 +85,16 @@ var if_incorrect = {
 };
 
 // Set parameters (from query string) or defaults.
-var s1 = s1 || 'blue';
-var s2 = s2 || 'orange';
-var o1 = o1 || 'crisp';
-var o2 = o2 || 'chocolate';
-var r1 = r1 || 'right';
-var r2 = r2 || 'left';
+var blocks = blocks || 1;
+var trials = trials || 12;
+var s1     = s1     || 'blue';
+var s2     = s2     || 'orange';
+var o1     = o1     || 'crisp';
+var o2     = o2     || 'chocolate';
+var r1     = r1     || 'right';
+var r2     = r2     || 'left';
+
+var block  = 1;
 
 var learn_stimuli = [
   {
@@ -123,7 +124,6 @@ var learn_stimuli = [
     }
   }
 ];
-
 var learn = {
   type: 'html-mouse-response',
   id: 'response',
@@ -138,18 +138,17 @@ var learn = {
     data.correct = data.direction == data.correct_response;
   },
 };
-
 var learn_procedure = {
   timeline: [iti, learn, if_correct, if_incorrect],
   timeline_variables: learn_stimuli,
   sample: {
     type: 'fixed-repetitions',
-    size: trials || 12
+    size: trials
   }
 };
-//if (Debug < 1) block_timeline.push(learn_procedure);
+if (Debug < 1) block_timeline.push(learn_procedure);
 
-/* test */
+/*** test ***/
 
 var test_instructions = {
   type: "html-keyboard-response",
@@ -160,7 +159,7 @@ var test_instructions = {
       "if you saw <strong>" + o2 + "</strong>, move the dot past the <strong>" + r2 + "</strong> line. Respond as quickly and accurately as you can.</p>" +
       "<p>Press any key to begin.</p>",
   post_trial_gap: 2000,
-  data: { phase: 'test' }
+  data: { phase: 'test' },
 };
 block_timeline.push(test_instructions);
 
@@ -215,7 +214,9 @@ var factors = {
 };
 var trials = jsPsych.randomization.factorial(factors, 1);
 var test_variables = [];
+var trial = 0;
 trials.forEach((item, index) => {
+  trial++;
   var vars = {
       outcome: 'img/' + item.outcome + '.jpg',
       delay_prompt: '<div>On the following trial, you can earn 1 ' + item.outcome + ' point</div>',
@@ -225,6 +226,7 @@ trials.forEach((item, index) => {
   }
   var data = {
     phase: 'test',
+    trial: trial,
     outcome: item.outcome,
     delay: item.delay,
     stimulus: item.stimulus
@@ -242,18 +244,14 @@ var test_procedure = {
   timeline_variables: test_variables,
   randomize_order: true
 };
-//block_timeline.push(test_procedure);
+block_timeline.push(test_procedure);
 
-
-blocks = 2;
-block  = 1;
 var loop_node = {
     timeline: block_timeline,
     loop_function: function(data) {
-      jsPsych.data.getLastTimelineData().addToAll({block: block});
+      data.addToAll({block: block}); // add block number to last timeline iteration
       block++;
       if (block <= blocks) {
-            // store block number
             return true;
         } else {
             return false;

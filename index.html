@@ -21,14 +21,15 @@
 <script src='js/util.js'></script>
 <script>
     // cf. getQueryString() in jsPsych
+    var blocks = $.QueryString.blocks ? $.QueryString.blocks : 1;
     var trials = $.QueryString.trials ? $.QueryString.trials : 12;
-    var Debug  = $.QueryString.Debug  ? $.QueryString.Debug  : 0;
     var s1     = $.QueryString.s1     ? $.QueryString.s1     : 'blue';
     var s2     = $.QueryString.s2     ? $.QueryString.s2     : 'orange';
     var o1     = $.QueryString.o1     ? $.QueryString.o1     : 'crisp';
     var o2     = $.QueryString.o2     ? $.QueryString.o2     : 'chocolate';
     var r1     = $.QueryString.r1     ? $.QueryString.r1     : 'right';
     var r2     = $.QueryString.r2     ? $.QueryString.r2     : 'left';
+    var Debug  = $.QueryString.Debug  ? $.QueryString.Debug  : 0;
 </script>
 <script src='experiment.js'></script>
 

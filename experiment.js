@@ -1,10 +1,22 @@
-/* create timeline */
-var timeline = [];
 
-jsPsych.data.addProperties({subject: 1, condition: 'FIXME'}); // FIXME
+// Set parameters (from query string) or defaults.
+var blocks   = blocks   || 'AB';
+var a_trials = a_trials || 12;
+var b_trials = b_trials || 24;
+var s1       = s1       || 'blue';
+var s2       = s2       || 'orange';
+var o1       = o1       || 'crisp';
+var o2       = o2       || 'chocolate';
+var r1       = r1       || 'right';
+var r2       = r2       || 'left';
 
-if (Debug < 2) {
-  // full screen
+var block  = 1;
+
+var timeline = []; // main timeline
+
+jsPsych.data.addProperties( {participant: participant} );
+
+if (! (Debug & 2) ) {
   timeline.push({
     type: 'fullscreen',
     message: '<div class="instructions"><p>Welcome to the experiment.</p><p>Press the button below to begin in full screen mode.</p></div>',
@@ -81,18 +93,6 @@ var if_incorrect = {
   }
 };
 
-// Set parameters (from query string) or defaults.
-var blocks   = blocks   || 'AB';
-var a_trials = a_trials || 12;
-var b_trials = b_trials || 24;
-var s1       = s1       || 'blue';
-var s2       = s2       || 'orange';
-var o1       = o1       || 'crisp';
-var o2       = o2       || 'chocolate';
-var r1       = r1       || 'right';
-var r2       = r2       || 'left';
-
-var block  = 1;
 
 var learn_stimuli = [
   {
@@ -268,8 +268,10 @@ for (var i = 0; i < blocks.length; i++) {
   } else {
     block_timeline.push(learn_procedure_b);
   }
-  block_timeline.push(test_instructions);
-  block_timeline.push(test_procedure);
+  if ( ! (Debug & 1) ) {
+    block_timeline.push(test_instructions);
+    block_timeline.push(test_procedure);
+  }
   block_timeline.push(block_node);
   timeline.push({timeline: block_timeline});
 }

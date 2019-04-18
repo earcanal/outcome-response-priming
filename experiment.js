@@ -221,6 +221,12 @@ var test_variables = [];
 var trial = 0;
 trials.forEach((item, index) => {
   trial++;
+  var congruent = false;
+  if (item.stimulus == s1) {
+    if (item.outcome == o1) congruent = true 
+  } else {
+    if (item.outcome == o2) congruent = true 
+  }
   var vars = {
       outcome: 'img/' + item.outcome + '.jpg',
       delay_prompt: '<div>On the following trial, you can earn 1 ' + item.outcome + ' point</div>',
@@ -233,7 +239,8 @@ trials.forEach((item, index) => {
     trial: trial,
     outcome: item.outcome,
     delay: item.delay,
-    stimulus: item.stimulus
+    stimulus: item.stimulus,
+    congruent: congruent
   }
   if (item.outcome == o1) {
     data.correct_response = r1

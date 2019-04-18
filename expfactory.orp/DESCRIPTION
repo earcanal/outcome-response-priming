@@ -10,7 +10,7 @@ Encoding: UTF-8
 LazyData: true
 Depends: R (>= 3.4.0)
 Imports:
-  expfactory,
+  expfactory (>= 0.1.1),
   dplyr,
   magrittr,
   tidyr

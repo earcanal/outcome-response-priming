@@ -32,14 +32,20 @@ var learn_instructions = {
       "<p>Move the dot past the line on the left or right as fast as you can to win rewards.</p>" +
       "<p>Press any key to begin.</p>",
   post_trial_gap: 2000,
-  data: { phase: 'learn' }
+  data: {
+    phase: 'learn',
+    step: 'instructions'
+  }
 };
 var iti = {
   type: 'html-mouse-response',
   prompt: '<div id="iti-prompt">Keep the dot within the square.</div>',
   range: 20,
   background: 'black',
-  data: { phase: 'learn' },
+  data: {
+    phase: 'learn',
+    step: 'iti'
+  },
   trial_duration: function() { return jsPsych.randomization.sampleWithoutReplacement([250, 500, 750, 1000, 1250, 1500, 1750, 2000], 1)[0]; },
   on_finish: function(data){
     //FIXME: Any response incurs penalty
@@ -54,7 +60,20 @@ var correct_outcome = {
   trial_duration: 3000,
   data: {
     phase: 'learn',
+    step: 'response',
     correct: true
+  }
+};
+var incorrect_outcome = {
+  type: 'image-keyboard-response',
+  stimulus: 'img/incorrect.jpg',
+  prompt: '<div>You earned no points</div>',
+  choices: jsPsych.NO_KEYS,
+  trial_duration: 3000,
+  data: {
+    phase: 'learn',
+    step: 'response',
+    correct: false
   }
 };
 var if_correct = {
@@ -67,17 +86,6 @@ var if_correct = {
       } else {
           return false;
       }
-  }
-};
-var incorrect_outcome = {
-  type: 'image-keyboard-response',
-  stimulus: 'img/incorrect.jpg',
-  prompt: '<div>You earned no points</div>',
-  choices: jsPsych.NO_KEYS,
-  trial_duration: 3000,
-  data: {
-    phase: 'learn',
-    correct: false
   }
 };
 var if_incorrect = {
@@ -103,6 +111,7 @@ var learn_stimuli = [
     prompt: '<div>You earned 1 ' + o1 + ' point</div>',
     data: {
       phase: 'learn',
+      step: 'stimulus',
       stimulus: s1,
       outcome: o1,
       correct_response: r1
@@ -116,6 +125,7 @@ var learn_stimuli = [
     prompt: '<div>You earned 1 ' + o2 + ' point</div>',
     data: {
       phase: 'learn',
+      step: 'stimulus',
       stimulus: s2,
       outcome: o2,
       correct_response: r2
@@ -164,7 +174,10 @@ var test_instructions = {
       "if you saw <strong>" + o2 + "</strong>, move the dot past the <strong>" + r2 + "</strong> line. Respond as quickly and accurately as you can.</p>" +
       "<p>Press any key to begin.</p>",
   post_trial_gap: 2000,
-  data: { phase: 'test' },
+  data: {
+     phase: 'test',
+     step: 'instructions'
+  },
 };
 
 var test_delay = {
@@ -172,14 +185,20 @@ var test_delay = {
   stimulus: jsPsych.timelineVariable('delay_prompt'),
   choices: jsPsych.NO_KEYS,
   trial_duration: 2500,
-  data: jsPsych.timelineVariable('data')
+  data: jsPsych.timelineVariable('data'),
+  on_finish: function(data){
+     data.step = 'delay'
+  }
 };
 var test_outcome = {
   type: 'image-keyboard-response',
   stimulus: jsPsych.timelineVariable('outcome'),
   choices: jsPsych.NO_KEYS,
   trial_duration: 3000,
-  data: jsPsych.timelineVariable('data')
+  data: jsPsych.timelineVariable('data'),
+  on_finish: function(data){
+     data.step = 'outcome'
+  }
 };
 var test_distraction = {
   type: 'html-mouse-response',
@@ -190,7 +209,8 @@ var test_distraction = {
   data: jsPsych.timelineVariable('data'),
   on_finish: function(data){
     //FIXME: Any response incurs penalty
-    data.correct = data.direction
+    data.correct = data.direction;
+    data.step = 'distraction'
   },
 };
 var test_response = {
@@ -207,6 +227,7 @@ var test_response = {
   on_finish: function(data){
     $(document.body).css({'background': 'white'});
     data.correct = data.direction == data.correct_response;
+    data.step = 'response'
   },
 };
 
@@ -296,6 +317,7 @@ var debrief_block = {
     return "<p>You responded correctly on "+accuracy+"% of the trials.</p>"+
     "<p>Your average response time was "+rt+"ms.</p>"+
     "<p>Press any key to complete the experiment. Thank you!</p>";
-  }
+  },
+  data: { phase: 'debrief' }
 };
 timeline.push(debrief_block);

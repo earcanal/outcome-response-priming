@@ -14,7 +14,6 @@ if (Debug < 2) {
 
 /*** learn ***/
 
-var block_timeline = [];
 var learn_instructions = {
   type: "html-keyboard-response",
   stimulus: "<p>In this part of the experiment, you will see a dot on a coloured screen.</p>" +
@@ -23,8 +22,6 @@ var learn_instructions = {
   post_trial_gap: 2000,
   data: { phase: 'learn' }
 };
-block_timeline.push(learn_instructions);
-
 var iti = {
   type: 'html-mouse-response',
   prompt: '<div id="iti-prompt">Keep the dot within the square.</div>',
@@ -85,14 +82,15 @@ var if_incorrect = {
 };
 
 // Set parameters (from query string) or defaults.
-var blocks = blocks || 1;
-var trials = trials || 12;
-var s1     = s1     || 'blue';
-var s2     = s2     || 'orange';
-var o1     = o1     || 'crisp';
-var o2     = o2     || 'chocolate';
-var r1     = r1     || 'right';
-var r2     = r2     || 'left';
+var blocks   = blocks   || 'AB';
+var a_trials = a_trials || 12;
+var b_trials = b_trials || 24;
+var s1       = s1       || 'blue';
+var s2       = s2       || 'orange';
+var o1       = o1       || 'crisp';
+var o2       = o2       || 'chocolate';
+var r1       = r1       || 'right';
+var r2       = r2       || 'left';
 
 var block  = 1;
 
@@ -138,15 +136,22 @@ var learn = {
     data.correct = data.direction == data.correct_response;
   },
 };
-var learn_procedure = {
+var learn_procedure_a = {
   timeline: [iti, learn, if_correct, if_incorrect],
   timeline_variables: learn_stimuli,
   sample: {
     type: 'fixed-repetitions',
-    size: trials
+    size: a_trials
   }
 };
-if (Debug < 1) block_timeline.push(learn_procedure);
+var learn_procedure_b = {
+  timeline: [iti, learn, if_correct, if_incorrect],
+  timeline_variables: learn_stimuli,
+  sample: {
+    type: 'fixed-repetitions',
+    size: b_trials
+  }
+};
 
 /*** test ***/
 
@@ -161,7 +166,6 @@ var test_instructions = {
   post_trial_gap: 2000,
   data: { phase: 'test' },
 };
-block_timeline.push(test_instructions);
 
 var test_delay = {
   type: 'html-keyboard-response',
@@ -244,21 +248,31 @@ var test_procedure = {
   timeline_variables: test_variables,
   randomize_order: true
 };
-block_timeline.push(test_procedure);
 
-var loop_node = {
-    timeline: block_timeline,
-    loop_function: function(data) {
-      data.addToAll({block: block}); // add block number to last timeline iteration
-      block++;
-      if (block <= blocks) {
-            return true;
-        } else {
-            return false;
-        }
-    }
+// store number of learn+test block
+var block_node = {
+  type: 'call-function',
+  func: function() {
+    var block_data = jsPsych.data.getDataByTimelineNode('0.0-' + block + '.0')
+    block_data.addToAll({block: block}); // add block number to last timeline iteration
+    block++;
+  }
 }
-timeline.push(loop_node)
+
+// make blocks
+for (var i = 0; i < blocks.length; i++) {
+  var block_timeline = [learn_instructions];
+  var type  = blocks.charAt(i);
+  if ( type == 'A' ) {
+    block_timeline.push(learn_procedure_a);
+  } else {
+    block_timeline.push(learn_procedure_b);
+  }
+  block_timeline.push(test_instructions);
+  block_timeline.push(test_procedure);
+  block_timeline.push(block_node);
+  timeline.push({timeline: block_timeline});
+}
 
 /* debrief */
 // FIXME: display points earned?
